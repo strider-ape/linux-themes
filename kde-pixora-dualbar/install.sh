@@ -5,6 +5,7 @@
 #   ./install.sh                 # install + apply
 #   LAUNCHERS="..." ./install.sh # custom pinned apps in the dock
 #   MENU_LABEL="Arch" ./install.sh
+#   WALLPAPER=0 ./install.sh     # keep your current wallpaper
 #
 # Your current Plasma config is backed up to ~/plasma-backup-<timestamp>/ first.
 # Undo with ./uninstall.sh
@@ -17,7 +18,10 @@ PLASMUSIC_VER="v4.3.1"
 NERDFONTS_VER="v3.5.1"
 SPEEDINGBULLET_REPO="https://github.com/strider-ape/speeding-bullet.git"
 
+WALLPAPER_URL="https://w.wallhaven.cc/full/yq/wallhaven-yqv55x.png"   # pixel art by LorienPixel
+
 ICON_THEME="${ICON_THEME:-pixora-dark}"   # pixora | pixora-dark | pixora-accent
+WALLPAPER="${WALLPAPER:-1}"               # 0 = keep your current wallpaper
 FONT="DepartureMono Nerd Font"
 LAUNCHERS="${LAUNCHERS:-applications:systemsettings.desktop,preferred://filemanager,preferred://browser,applications:kitty.desktop}"
 if [[ -z "${MENU_LABEL:-}" ]]; then
@@ -94,6 +98,15 @@ say "Applying icon theme: $ICON_THEME"
 CHANGEICONS="$(ls /usr/libexec/plasma-changeicons /usr/lib/plasma-changeicons /usr/lib*/libexec/plasma-changeicons 2>/dev/null | head -1 || true)"
 if [[ -n "$CHANGEICONS" ]]; then "$CHANGEICONS" "$ICON_THEME"
 else kwriteconfig6 --file kdeglobals --group Icons --key Theme "$ICON_THEME"; fi
+
+# ---------- wallpaper ----------
+if [[ "$WALLPAPER" == 1 ]]; then
+  say "Setting wallpaper"
+  WP_DIR="$(xdg-user-dir PICTURES 2>/dev/null || echo "$HOME/Pictures")/Wallpapers"
+  mkdir -p "$WP_DIR"
+  curl -fsSL -o "$WP_DIR/wallhaven-yqv55x.png" "$WALLPAPER_URL"
+  plasma-apply-wallpaperimage "$WP_DIR/wallhaven-yqv55x.png" >/dev/null
+fi
 
 # ---------- panels ----------
 say "Building top bar + dock"

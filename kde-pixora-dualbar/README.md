@@ -20,6 +20,7 @@ A pixel-art KDE setup with two bars: a thin top bar where each widget sits in it
 | Widget styling | **Panel Colorizer**: the "Rounded Widgets" preset on the top bar, "Dock" on the dock | [luisbocanegra/plasma-panel-colorizer](https://github.com/luisbocanegra/plasma-panel-colorizer) v8.1.0 |
 | Media widget | **Plasmusic Toolbar**: album art and playback controls in the dock | [ccatterina/plasmusic-toolbar](https://github.com/ccatterina/plasmusic-toolbar) v4.3.1 |
 | Network speed | **Speeding Bullet** | [strider-ape/speeding-bullet](https://github.com/strider-ape/speeding-bullet) |
+| Wallpaper | Pixel-art ruins and dragon by **LorienPixel** (downloaded at install, not stored in this repo) | [wallhaven yqv55x](https://wallhaven.cc/w/yqv55x) · [artist](https://x.com/LorienPixel/status/2053839130778349801) |
 
 ### Layout
 
@@ -50,8 +51,9 @@ That's it. The script:
 1. Backs up your current Plasma config to `~/plasma-backup-<timestamp>/`
 2. Downloads and installs the icons, font and widgets at the versions pinned in the script
 3. Switches the icon theme to Pixora Dark
-4. Rebuilds the panels: your first panel becomes the top bar and the dock is created fresh
-5. Restarts plasmashell
+4. Downloads the wallpaper to `~/Pictures/Wallpapers/` and sets it
+5. Rebuilds the panels: your first panel becomes the top bar and the dock is created fresh
+6. Restarts plasmashell
 
 > ⚠️ **Panels other than your first one are removed.** Your clock, system tray, app menu and Speeding Bullet settings carry over; every other widget on your panels is replaced.
 
@@ -64,6 +66,7 @@ Set these as environment variables before `./install.sh`:
 | `LAUNCHERS` | System Settings, file manager, browser, kitty | `LAUNCHERS="preferred://filemanager,applications:org.kde.konsole.desktop"` |
 | `MENU_LABEL` | First word of your distro name (`openSUSE`, `Arch`, …) | `MENU_LABEL="Start"` |
 | `ICON_THEME` | `pixora-dark` | `ICON_THEME=pixora-accent` (folders follow your KDE accent color) |
+| `WALLPAPER` | `1` | `WALLPAPER=0` keeps your current wallpaper |
 
 ```bash
 MENU_LABEL="Arch" ICON_THEME=pixora-accent ./install.sh
@@ -92,8 +95,8 @@ MENU_LABEL="Arch" ICON_THEME=pixora-accent ./install.sh
 - **Audio visualizer:** the original has one in the middle of the top bar. Install `cava` (`sudo zypper in cava` / `sudo pacman -S cava`) and a CAVA-based visualizer widget, then put it between the two spacers.
 - **24h clock:** right-click the clock → Configure → Time display: *24-Hour*.
 - **Different look:** Panel Colorizer ships about 30 presets (Blur Widgets, Neon Lights, ChromeOS, …). Open the Panel Colorizer settings on either bar and pick one.
-- The wallpaper and desktop widgets from the original post aren't included.
+- The desktop widgets from the original post (calendar, weather, clock, media) aren't included.
 
 ## Credits
 
-Icons by [tsora1603](https://github.com/tsora1603/pixora-icons), Panel Colorizer by [luisbocanegra](https://github.com/luisbocanegra), Plasmusic Toolbar by [ccatterina](https://github.com/ccatterina), Departure Mono by [Helena Zhang](https://departuremono.com/), inspired by the r/unixporn post linked above.
+Icons by [tsora1603](https://github.com/tsora1603/pixora-icons), Panel Colorizer by [luisbocanegra](https://github.com/luisbocanegra), Plasmusic Toolbar by [ccatterina](https://github.com/ccatterina), Departure Mono by [Helena Zhang](https://departuremono.com/), wallpaper by [LorienPixel](https://x.com/LorienPixel), inspired by the r/unixporn post linked above.
