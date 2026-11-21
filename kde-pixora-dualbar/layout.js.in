@@ -1,0 +1,90 @@
+// Plasma layout script for the "Pixora dual-bar" rice.
+// install.sh fills in the __PLACEHOLDERS__ and runs it through
+//   qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript
+//
+// Top bar : clock | CPU % | net speed | distro menu ......... tray | power
+// Dock    : floating, centered, fit-to-content: media player + pinned apps
+
+var TOP        = __TOP__;         // Panel Colorizer "Rounded Widgets" preset (JSON string)
+var DOCK       = __DOCK__;        // Panel Colorizer "Dock" preset (JSON string)
+var FONT       = __FONT__;        // e.g. "DepartureMono Nerd Font"
+var LAUNCHERS  = __LAUNCHERS__;   // comma-separated task manager launchers
+var MENU_LABEL = __MENU_LABEL__;  // text next to the app-menu icon
+
+function cfg(w, group, kv) {
+  w.currentConfigGroup = group;
+  for (var k in kv) w.writeConfig(k, kv[k]);
+}
+
+// ---------- TOP BAR: reuse the first panel, drop every other panel ----------
+var all = panels();
+var p = all.length ? all[0] : new Panel("org.kde.panel");
+for (var i = 1; i < all.length; i++) all[i].remove();
+
+// Keep these widgets (and their settings) if they already exist; remove the rest.
+var KEEP = ["org.kde.plasma.systemtray", "org.kde.plasma.digitalclock",
+            "org.kde.plasma.kickoff", "com.github.dip.speedingbullet"];
+var keep = {};
+p.widgets().forEach(function (w) {
+  if (KEEP.indexOf(w.type) >= 0 && !keep[w.type]) keep[w.type] = w;
+  else w.remove();
+});
+function get(type) { return keep[type] || p.addWidget(type); }
+
+p.location = "top";
+p.height = 36;
+p.floating = false;
+p.lengthMode = "fill";
+p.hiding = "none";
+
+var clock = get("org.kde.plasma.digitalclock");
+cfg(clock, ["Appearance"], { showDate: false, autoFontAndSize: false,
+                             fontFamily: FONT, fontSize: 13, fontWeight: 400 });
+
+var cpu = p.addWidget("org.kde.plasma.systemmonitor.cpu");
+cfg(cpu, ["Appearance"], { chartFace: "org.kde.ksysguard.textonly" });
+
+var net = get("com.github.dip.speedingbullet");
+
+var menu = get("org.kde.plasma.kickoff");
+cfg(menu, ["General"], { menuLabel: MENU_LABEL });
+
+var spacerL = p.addWidget("org.kde.plasma.panelspacer");
+var spacerR = p.addWidget("org.kde.plasma.panelspacer");
+var tray = get("org.kde.plasma.systemtray");
+
+var power = p.addWidget("org.kde.plasma.lock_logout");
+cfg(power, ["General"], { show_lockScreen: true, show_requestShutDown: true,
+                          show_requestReboot: true, show_requestLogout: false,
+                          show_suspendToRam: false, show_suspendToDisk: false,
+                          show_requestLogoutScreen: false });
+
+var colTop = p.addWidget("luisbocanegra.panel.colorizer");
+cfg(colTop, ["General"], { globalSettings: TOP, lastPreset: "Rounded Widgets", hideWidget: true });
+
+var order = [clock, cpu, net, menu, spacerL, spacerR, tray, power, colTop];
+
+// ---------- BOTTOM DOCK ----------
+var d = new Panel("org.kde.panel");
+d.location = "bottom";
+d.height = 56;
+d.floating = true;
+d.lengthMode = "fit";
+d.alignment = "center";
+d.hiding = "none";
+
+var music = d.addWidget("plasmusic-toolbar");
+cfg(music, ["General"], { useAlbumCoverAsPanelIcon: true, albumCoverRadius: 6,
+                          useCustomFont: true,
+                          customFont: FONT + ",11,-1,5,400,0,0,0,0,0,0,0,0,0,0,1",
+                          maxSongWidthInPanel: 160, showWhenNoMedia: false });
+
+var tasks = d.addWidget("org.kde.plasma.icontasks");
+cfg(tasks, ["General"], { launchers: LAUNCHERS, showOnlyCurrentScreen: true, iconSpacing: 2 });
+
+var colDock = d.addWidget("luisbocanegra.panel.colorizer");
+cfg(colDock, ["General"], { globalSettings: DOCK, lastPreset: "Dock", hideWidget: true });
+
+// Plasma overwrites AppletOrder while running, so install.sh writes this
+// into the config file with plasmashell stopped.
+print("ORDER " + p.id + " " + order.map(function (w) { return w.id; }).join(";"));
