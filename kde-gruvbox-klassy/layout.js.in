@@ -1,0 +1,80 @@
+// Plasma layout script for the "Gruvbox Klassy" rice.
+// install.sh fills in the __PLACEHOLDERS__ and runs it through
+//   qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript
+//
+// Top bar : power | workspaces (Kara) ........ date + clock ........ tray | Control Station
+// Dock    : floating, centered: Andromeda launcher | separator | pinned apps
+
+var LAUNCHERS = __LAUNCHERS__;   // comma-separated task manager launchers
+var PAGER     = __PAGER__;       // "org.dhruv8sh.kara" if installed, else "org.kde.plasma.pager"
+
+function cfg(w, group, kv) {
+  w.currentConfigGroup = group;
+  for (var k in kv) w.writeConfig(k, kv[k]);
+}
+
+// ---------- TOP BAR: reuse the first panel, drop every other panel ----------
+var all = panels();
+var p = all.length ? all[0] : new Panel("org.kde.panel");
+for (var i = 1; i < all.length; i++) all[i].remove();
+
+var KEEP = ["org.kde.plasma.systemtray", "org.kde.plasma.digitalclock"];
+var keep = {};
+p.widgets().forEach(function (w) {
+  if (KEEP.indexOf(w.type) >= 0 && !keep[w.type]) keep[w.type] = w;
+  else w.remove();
+});
+function get(type) { return keep[type] || p.addWidget(type); }
+
+p.location = "top";
+p.height = 32;
+p.floating = false;
+p.lengthMode = "fill";
+p.hiding = "none";
+
+var power = p.addWidget("org.kde.plasma.lock_logout");
+cfg(power, ["General"], { show_lockScreen: false, show_requestLogout: false,
+                          show_requestShutDown: true, show_requestReboot: false,
+                          show_suspendToRam: false, show_suspendToDisk: false,
+                          show_requestLogoutScreen: false });
+
+var pager = p.addWidget(PAGER);
+if (PAGER == "org.dhruv8sh.kara") cfg(pager, ["general"], { type: 0 });   // pill style
+
+var spacerL = p.addWidget("org.kde.plasma.panelspacer");
+
+var clock = get("org.kde.plasma.digitalclock");
+cfg(clock, ["Appearance"], { showDate: true, dateDisplayFormat: "BesideTime",
+                             dateFormat: "shortDate", autoFontAndSize: true,
+                             use24hFormat: 0 });
+
+var spacerR = p.addWidget("org.kde.plasma.panelspacer");
+var tray = get("org.kde.plasma.systemtray");
+
+var station = p.addWidget("KdeControlStation");
+cfg(station, ["General"], { useSystemColorsOnToggles: true, useSystemColorsOnSliders: true,
+                            showAvatar: true, showBattery: true, showSessionActions: true,
+                            showKDEConnect: true, showNightLight: true, showColorSwitcher: true,
+                            showDnd: true, showVolume: true, showBrightness: true,
+                            showMediaPlayer: true });
+
+var order = [power, pager, spacerL, clock, spacerR, tray, station];
+
+// ---------- BOTTOM DOCK ----------
+var d = new Panel("org.kde.panel");
+d.location = "bottom";
+d.height = 48;
+d.floating = true;
+d.lengthMode = "fit";
+d.alignment = "center";
+d.hiding = "none";
+
+var launcher = d.addWidget("AndromedaLauncher");
+cfg(launcher, ["General"], { launcherPosition: 2, enableGreeting: false });
+d.addWidget("org.kde.plasma.marginsseparator");
+var tasks = d.addWidget("org.kde.plasma.icontasks");
+cfg(tasks, ["General"], { launchers: LAUNCHERS, showOnlyCurrentScreen: true });
+
+// Plasma overwrites AppletOrder while running, so install.sh writes this
+// into the config file with plasmashell stopped.
+print("ORDER " + p.id + " " + order.map(function (w) { return w.id; }).join(";"));
