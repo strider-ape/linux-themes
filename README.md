@@ -6,6 +6,7 @@ My Linux desktop setups, each with screenshots and a one-command installer.
 |---|---|---|
 | [**Pixora Dual-Bar**](kde-pixora-dualbar/) | KDE Plasma 6: pixel-art icons, pill top bar, floating dock | <img src="kde-pixora-dualbar/screenshots/desktop.png" width="400"> |
 | [**Gruvbox Klassy**](kde-gruvbox-klassy/) | KDE Plasma 6: Gruvbox, Klassy, Kara, Control Station, SilentSDDM | <img src="kde-gruvbox-klassy/screenshots/desktop.png" width="400"> |
+| [**Gruvbox Taskline**](kde-gruvbox-taskline/) | KDE Plasma 6: one floating panel, app-coloured task lines (FancyTasksNG), square corners, Control Station Tahoe | <img src="kde-gruvbox-taskline/screenshots/desktop.png" width="400"> |
 
 Each folder has its own `README.md` with install and undo steps.
 

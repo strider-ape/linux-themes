@@ -1,0 +1,75 @@
+// Plasma layout script for the "Gruvbox Taskline" theme.
+// install.sh fills in __LAUNCHERS__ and runs it through
+//   qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript
+//
+// One floating bottom panel, full width:
+//   launcher | FancyTasksNG ...................... tray | Control Station | clock | show desktop
+
+var LAUNCHERS = __LAUNCHERS__;   // comma-separated task manager launchers
+
+function cfg(w, group, kv) {
+  w.currentConfigGroup = group;
+  for (var k in kv) w.writeConfig(k, kv[k]);
+}
+
+// Reuse the first panel, drop every other panel
+var all = panels();
+var p = all.length ? all[0] : new Panel("org.kde.panel");
+for (var i = 1; i < all.length; i++) all[i].remove();
+
+// Keep the existing tray and clock (their settings carry over), remove everything else
+var KEEP = ["org.kde.plasma.systemtray", "org.kde.plasma.digitalclock"];
+var keep = {};
+p.widgets().forEach(function (w) {
+  if (KEEP.indexOf(w.type) >= 0 && !keep[w.type]) keep[w.type] = w;
+  else w.remove();
+});
+function get(type) { return keep[type] || p.addWidget(type); }
+
+p.location = "bottom";
+p.height = 44;
+p.floating = true;
+p.lengthMode = "fill";
+p.alignment = "center";
+p.hiding = "none";
+p.opacity = "adaptive";
+
+var kickoff = p.addWidget("org.kde.plasma.kickoff");
+
+// Per-app colored line under running apps: Line style, icon's own color,
+// dimmed when inactive, minimized apps greyed out, no hover zoom
+var tasks = p.addWidget("io.github.daydve.fancytasksng");
+cfg(tasks, ["General"], {
+  launchers: LAUNCHERS,
+  indicatorsEnabled: 1, indicatorStyle: 0,
+  indicatorAccentColor: false, indicatorDominantColor: true,
+  indicatorDimInactive: true, indicatorInactiveOpacity: 50,
+  indicatorDesaturate: true, indicatorRadius: 2,
+  indicatorSize: 3, indicatorActiveSize: 4,
+  iconZoomFactor: 0
+});
+
+var sep = p.addWidget("org.kde.plasma.marginsseparator");
+var tray = get("org.kde.plasma.systemtray");
+
+// Control Station keeps its settings in the "Appearance" group. layout 3 = Tahoe;
+// the rest matches what its settings page switches on when you pick Tahoe.
+var station = p.addWidget("KdeControlStation");
+cfg(station, ["Appearance"], {
+  layout: 3,
+  showNightLight: true, showColorSwitcher: true, showBrightness: true,
+  showKDEConnect: true, showScreenshot: true, showCmd1: false, showCmd2: false,
+  volume_widget_flat: false, volume_widget_title: true, volume_widget_thin: false,
+  brightness_widget_flat: false, brightness_widget_title: true, brightness_widget_thin: false
+});
+
+var clock = get("org.kde.plasma.digitalclock");
+cfg(clock, ["Appearance"], { dateFormat: "custom", customDateFormat: "dd-MM-yyyy" });
+
+var desk = p.addWidget("org.kde.plasma.showdesktop");
+
+var order = [kickoff, tasks, sep, tray, station, clock, desk];
+
+// Plasma overwrites AppletOrder while running, so install.sh writes this
+// into the config file with plasmashell stopped.
+print("ORDER " + p.id + " " + order.map(function (w) { return w.id; }).join(";"));
