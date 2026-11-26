@@ -25,6 +25,7 @@ In the taskbar close-up, Dolphin is the active app (full-strength blue line on a
 | Taskbar | **FancyTasksNG** v2.3.0, checksum-verified | [DayDve/FancyTasksNG](https://github.com/DayDve/FancyTasksNG) | |
 | Quick settings | **KDE Control Station**, Tahoe layout | [EliverLara/kde-control-station](https://github.com/EliverLara/kde-control-station) | |
 | Effects | Sheet (built in), **Geometry Change**, **Better Blur DX**. Rounded Corners stays off | [peterfajdiga/kwin4_effect_geometry_change](https://github.com/peterfajdiga/kwin4_effect_geometry_change), [xarblu/kwin-effects-better-blur-dx](https://github.com/xarblu/kwin-effects-better-blur-dx) | blur: sudo, compiled |
+| Network speed | **Speeding Bullet**, live download/upload speed left of the tray, text at 115% | [strider-ape/speeding-bullet](https://github.com/strider-ape/speeding-bullet) | `vnstat` for the "Today's usage" pop-up |
 | Window decoration + app style | **Klassy** with a 0 px corner radius | [paulmcauley/klassy](https://github.com/paulmcauley/klassy) | sudo, compiled |
 | Login screen | **SilentSDDM** | [uiriansan/SilentSDDM](https://github.com/uiriansan/SilentSDDM) | sudo |
 
@@ -32,13 +33,14 @@ In the taskbar close-up, Dolphin is the active app (full-strength blue line on a
 
 ```
 ╭──────────────────────────────────────────────────────────────────────────────╮
-│ ✦  ⚙  🛍  📁  ◎  >_  …                          tray  ⚙   1:16 AM     ▭ │  44px, floating, full width
+│ ✦  ⚙  🛍  📁  ◎  >_  …       ↓ 2.1M ↑ 40K       tray  ⚙   1:16 AM     ▭ │  44px, floating, full width
 │              ▔▔  ▔▔                                       23-11-2026        │
 ╰──────────────────────────────────────────────────────────────────────────────╯
 ```
 
 - **✦** is Plasma's application launcher.
 - The pinned apps are System Settings, Discover, your file manager and your browser. Running apps get a line underneath in their icon's colour.
+- **↓ ↑** before the tray is Speeding Bullet, the live network speed. Click it for today's usage.
 - **⚙** after the tray is Control Station: Wi-Fi, Bluetooth, Do Not Disturb, Night Light, dark/light switch, KDE Connect, screenshot, volume, brightness and media.
 - **▭** on the far right shows the desktop.
 

@@ -21,6 +21,7 @@ KURO_REPO="https://github.com/bouteillerAlan/kuro.git"
 FANCYTASKS_URL="https://github.com/DayDve/FancyTasksNG/releases/download/v2.3.0/FancyTasksNG.plasmoid"
 FANCYTASKS_SHA256="5c8719e922bf86b3a87d3a16dc84abc466b1ac94df0e9a0dea6eba9f39e1efb0"
 STATION_REPO="https://github.com/EliverLara/kde-control-station.git"
+SPEEDING_REPO="https://github.com/strider-ape/speeding-bullet.git"
 GEOMETRY_REPO="https://github.com/peterfajdiga/kwin4_effect_geometry_change.git"
 WALLPAPER_URL="https://gruvbox-wallpapers.pages.dev/wallpapers/anime/Kita.png"
 
@@ -149,6 +150,16 @@ install_plasmoid Plasma/Applet "$TMP/FancyTasksNG.plasmoid" io.github.daydve.fan
 say "KDE Control Station"
 clone "$STATION_REPO" station
 install_plasmoid Plasma/Applet "$TMP/station/package" KdeControlStation
+
+say "Speeding Bullet (network speed)"
+# An existing copy is left alone: it may be a git checkout you update yourself.
+if has_plasmoid Plasma/Applet com.github.dip.speedingbullet; then
+  echo "    already installed"
+else
+  clone "$SPEEDING_REPO" speeding
+  install_plasmoid Plasma/Applet "$TMP/speeding" com.github.dip.speedingbullet
+fi
+command -v vnstat >/dev/null || warn "vnstat not installed: Speeding Bullet's \"Today's usage\" pop-up needs it (package vnstat, service vnstatd/vnstat)."
 
 # ---------- KWin ----------
 say "KWin effects and window decoration"

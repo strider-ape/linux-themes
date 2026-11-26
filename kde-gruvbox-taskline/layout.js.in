@@ -3,7 +3,7 @@
 //   qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript
 //
 // One floating bottom panel, full width:
-//   launcher | FancyTasksNG ...................... tray | Control Station | clock | show desktop
+//   launcher | FancyTasksNG ........ Speeding Bullet | tray | Control Station | clock | show desktop
 
 var LAUNCHERS = __LAUNCHERS__;   // comma-separated task manager launchers
 
@@ -50,6 +50,11 @@ cfg(tasks, ["General"], {
 });
 
 var sep = p.addWidget("org.kde.plasma.marginsseparator");
+
+// Live download/upload speed, just left of the tray. Text 15% larger than default.
+var speed = p.addWidget("com.github.dip.speedingbullet");
+cfg(speed, ["General"], { fontSizeScale: 1.15 });
+
 var tray = get("org.kde.plasma.systemtray");
 
 // Control Station keeps its settings in the "Appearance" group. layout 3 = Tahoe;
@@ -64,11 +69,15 @@ cfg(station, ["Appearance"], {
 });
 
 var clock = get("org.kde.plasma.digitalclock");
-cfg(clock, ["Appearance"], { dateFormat: "custom", customDateFormat: "dd-MM-yyyy" });
+// Weeks start on Sunday; the calendar pop-up shows events from KDE PIM if it's installed
+cfg(clock, ["Appearance"], {
+  dateFormat: "custom", customDateFormat: "dd-MM-yyyy",
+  firstDayOfWeek: 0, enabledCalendarPlugins: "pimevents"
+});
 
 var desk = p.addWidget("org.kde.plasma.showdesktop");
 
-var order = [kickoff, tasks, sep, tray, station, clock, desk];
+var order = [kickoff, tasks, sep, speed, tray, station, clock, desk];
 
 // Plasma overwrites AppletOrder while running, so install.sh writes this
 // into the config file with plasmashell stopped.
