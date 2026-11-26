@@ -19,7 +19,7 @@ In the taskbar close-up, Dolphin is the active app (full-strength blue line on a
 | Colours | Gruvbox | [printesoi/kde-gruvbox](https://github.com/printesoi/kde-gruvbox) | |
 | Icons | Papirus-Light `20260801` | [PapirusDevelopmentTeam/papirus-icon-theme](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme) | |
 | Cursor | Bibata-Modern-Ice v2.0.7 | [ful1e5/Bibata_Cursor](https://github.com/ful1e5/Bibata_Cursor) | |
-| Font | Inter 4.1, 10 pt | [rsms/inter](https://github.com/rsms/inter) | |
+| Font | Inter 4.1, 10 pt, also the default `sans-serif` for other apps and web pages (fontconfig) | [rsms/inter](https://github.com/rsms/inter) | |
 | Splash | Kuro the cat | [bouteillerAlan/kuro](https://github.com/bouteillerAlan/kuro) | |
 | Wallpaper | Kita (downloaded at install) | [gruvbox-wallpapers](https://gruvbox-wallpapers.pages.dev/wallpapers/anime/Kita.png) | |
 | Taskbar | **FancyTasksNG** v2.3.0, checksum-verified | [DayDve/FancyTasksNG](https://github.com/DayDve/FancyTasksNG) | |

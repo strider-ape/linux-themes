@@ -122,6 +122,25 @@ if [[ "$FONT" == 1 ]]; then
     record "$DATA/fonts/inter"
   fi
   kwriteconfig6 --file kdeglobals --group General --key font "Inter,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
+
+  # Apps that ask for the generic "sans-serif" font (web pages, Flatpak apps)
+  # get Inter too. Kept in a file of its own, since KDE's font settings edit
+  # ~/.config/fontconfig/fonts.conf.
+  FC_INTER="$CONF/fontconfig/conf.d/50-inter-sans-serif.conf"
+  mkdir -p "$(dirname "$FC_INTER")"
+  [[ -f "$FC_INTER" ]] || record "$FC_INTER"
+  cat > "$FC_INTER" <<'XML'
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+  <!-- Gruvbox Taskline: Inter as the default sans-serif font -->
+  <alias>
+    <family>sans-serif</family>
+    <prefer><family>Inter</family></prefer>
+  </alias>
+</fontconfig>
+XML
+  fc-cache -f >/dev/null 2>&1 || true
 fi
 
 say "Kuro splash screen"
