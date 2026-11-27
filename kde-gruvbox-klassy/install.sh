@@ -63,7 +63,7 @@ plasma-apply-colorscheme Gruvbox >/dev/null
 say "Reversal-blue-dark icons"
 clone "$REVERSAL_REPO" reversal
 (cd "$TMP/reversal" && bash ./install.sh -t blue -d "$DATA/icons" >/dev/null)
-CHANGEICONS="$(ls /usr/libexec/plasma-changeicons /usr/lib/plasma-changeicons /usr/lib*/libexec/plasma-changeicons 2>/dev/null | head -1 || true)"
+CHANGEICONS="$(ls /usr/libexec/plasma-changeicons /usr/lib/plasma-changeicons /usr/lib*/libexec/plasma-changeicons /usr/lib/*/libexec/plasma-changeicons 2>/dev/null | head -1 || true)"
 if [[ -n "$CHANGEICONS" ]]; then "$CHANGEICONS" Reversal-blue-dark
 else kwriteconfig6 --file kdeglobals --group Icons --key Theme Reversal-blue-dark; fi
 
@@ -123,7 +123,8 @@ clone "$GEOMETRY_REPO" geometry; install_plasmoid KWin/Effect "$TMP/geometry/pac
 kw() { kwriteconfig6 --file kwinrc --group "$1" --key "$2" "$3"; }
 kw Plugins sheetEnabled true
 kw Plugins kwin4_effect_geometry_changeEnabled true
-plugin_exists() { ls /usr/lib*/qt6/plugins/"$1" >/dev/null 2>&1; }
+plugin_exists() {   # /usr/lib/<arch>/ on Debian
+  compgen -G "/usr/lib*/qt6/plugins/$1" >/dev/null || compgen -G "/usr/lib/*/qt6/plugins/$1" >/dev/null; }
 if plugin_exists kwin/effects/plugins/forceblur.so; then kw Plugins blurEnabled false; kw Plugins forceblurEnabled true
 else warn "Better Blur not installed (sudo ./install-system.sh)"; fi
 if plugin_exists kwin/effects/plugins/kwin4_effect_shapecorners.so; then kw Plugins kwin4_effect_shapecornersEnabled true

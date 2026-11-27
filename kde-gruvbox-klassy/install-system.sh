@@ -94,7 +94,8 @@ build_install() {  # $1 name, $2 repo, $3 branch or tag ("" = default branch), $
 }
 
 # ---------- 2-3. compiled plugins ----------
-if [[ -e /usr/lib64/qt6/plugins/org.kde.kdecoration3/org.kde.klassy.so || -e /usr/lib/qt6/plugins/org.kde.kdecoration3/org.kde.klassy.so ]]; then
+if compgen -G "/usr/lib*/qt6/plugins/org.kde.kdecoration3/org.kde.klassy.so" >/dev/null \
+   || compgen -G "/usr/lib/*/qt6/plugins/org.kde.kdecoration3/org.kde.klassy.so" >/dev/null; then   # /usr/lib/<arch>/ on Debian
   say "Klassy already installed, skipping"
 else
   build_install klassy "$KLASSY_REPO" "$KLASSY_REF" -DBUILD_QT5=OFF

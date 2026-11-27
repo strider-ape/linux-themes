@@ -35,7 +35,7 @@ qdbus6 org.kde.KWin /KWin reconfigure || true
 STYLE="$(kreadconfig6 --file plasmarc --group Theme --key name || true)"
 plasma-apply-desktoptheme "${STYLE:-default}" >/dev/null 2>&1 || true
 ICONS="$(kreadconfig6 --file kdeglobals --group Icons --key Theme || true)"
-CHANGEICONS="$(ls /usr/libexec/plasma-changeicons /usr/lib/plasma-changeicons 2>/dev/null | head -1 || true)"
+CHANGEICONS="$(ls /usr/libexec/plasma-changeicons /usr/lib/plasma-changeicons /usr/lib*/libexec/plasma-changeicons /usr/lib/*/libexec/plasma-changeicons 2>/dev/null | head -1 || true)"
 [[ -n "$CHANGEICONS" && -n "$ICONS" ]] && "$CHANGEICONS" "$ICONS" || true
 CURSOR="$(kreadconfig6 --file kcminputrc --group Mouse --key cursorTheme || true)"
 plasma-apply-cursortheme "${CURSOR:-breeze_cursors}" >/dev/null 2>&1 || true
