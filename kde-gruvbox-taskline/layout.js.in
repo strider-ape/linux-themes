@@ -3,7 +3,7 @@
 //   qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript
 //
 // One floating bottom panel, full width:
-//   launcher | FancyTasksNG ........ Speeding Bullet | tray | Control Station | clock | show desktop
+//   launcher | FancyTasksPlus ...... Speeding Bullet | tray | Control Station | clock | show desktop
 
 var LAUNCHERS = __LAUNCHERS__;   // comma-separated task manager launchers
 
@@ -36,16 +36,16 @@ p.opacity = "adaptive";
 
 var kickoff = p.addWidget("org.kde.plasma.kickoff");
 
-// Per-app colored line under running apps: Line style, icon's own color,
-// dimmed when inactive, minimized apps greyed out, no hover zoom
-var tasks = p.addWidget("io.github.daydve.fancytasksng");
+// Per-app colored line under running apps: Metro (line) style, icon's own color,
+// minimized apps greyed out, no hover zoom. FancyTasksPlus (Plasma 6.0+) on this
+// branch; it has no "dim inactive" setting, which FancyTasksNG on main adds.
+var tasks = p.addWidget("alexankitty.fancytasks");
 cfg(tasks, ["General"], {
   launchers: LAUNCHERS,
   indicatorsEnabled: 1, indicatorStyle: 0,
   indicatorAccentColor: false, indicatorDominantColor: true,
-  indicatorDimInactive: true, indicatorInactiveOpacity: 50,
   indicatorDesaturate: true, indicatorRadius: 2,
-  indicatorSize: 3, indicatorActiveSize: 4,
+  indicatorSize: 3,
   iconZoomFactor: 0
 });
 

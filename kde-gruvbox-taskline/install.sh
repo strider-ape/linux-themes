@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Gruvbox Taskline for KDE Plasma 6: user-level installer (no sudo).
-# For Klassy, Better Blur DX and the SilentSDDM login screen, run the Gruvbox Klassy
+# Branch plasma-6.3: for Plasma 6.3 (Debian 13 "trixie"). The task manager is
+# FancyTasksPlus (Plasma 6.0+, the port FancyTasksNG grew from; NG needs 6.5+), and the
+# blur is the original Better Blur 1.3.6 (forceblur) instead of Better Blur DX.
+# For Klassy, Better Blur and the SilentSDDM login screen, run the Gruvbox Klassy
 # system installer first:  sudo ../kde-gruvbox-klassy/install-system.sh
 # This script still works without it; those parts are just skipped.
 #
@@ -18,8 +21,8 @@ PAPIRUS_URL="https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/archiv
 BIBATA_URL="https://github.com/ful1e5/Bibata_Cursor/releases/download/v2.0.7/Bibata-Modern-Ice.tar.xz"
 INTER_URL="https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip"
 KURO_REPO="https://github.com/bouteillerAlan/kuro.git"
-FANCYTASKS_URL="https://github.com/DayDve/FancyTasksNG/releases/download/v2.3.0/FancyTasksNG.plasmoid"
-FANCYTASKS_SHA256="5c8719e922bf86b3a87d3a16dc84abc466b1ac94df0e9a0dea6eba9f39e1efb0"
+FANCYTASKS_REPO="https://github.com/SushiTrashXD/FancyTasksPlus.git"
+FANCYTASKS_COMMIT="3b44a5e39aeba1f616d78d4368c6112e5b5598cc"   # feature/enhancements, 2025-06-30
 STATION_REPO="https://github.com/EliverLara/kde-control-station.git"
 SPEEDING_REPO="https://github.com/strider-ape/speeding-bullet.git"
 GEOMETRY_REPO="https://github.com/peterfajdiga/kwin4_effect_geometry_change.git"
@@ -161,10 +164,11 @@ if [[ "$WALLPAPER" == 1 ]]; then
 fi
 
 # ---------- widgets ----------
-say "FancyTasksNG v2.3.0 (task manager with per-app colored lines)"
-curl -fsSL -o "$TMP/FancyTasksNG.plasmoid" "$FANCYTASKS_URL"
-echo "$FANCYTASKS_SHA256  $TMP/FancyTasksNG.plasmoid" | sha256sum -c --quiet - || die "FancyTasksNG download doesn't match the expected checksum."
-install_plasmoid Plasma/Applet "$TMP/FancyTasksNG.plasmoid" io.github.daydve.fancytasksng
+say "FancyTasksPlus (task manager with per-app colored lines), pinned commit ${FANCYTASKS_COMMIT:0:7}"
+git init -q "$TMP/fancytasks"
+git -C "$TMP/fancytasks" fetch -q --depth 1 "$FANCYTASKS_REPO" "$FANCYTASKS_COMMIT"
+git -C "$TMP/fancytasks" checkout -q FETCH_HEAD
+install_plasmoid Plasma/Applet "$TMP/fancytasks/package" alexankitty.fancytasks
 
 say "KDE Control Station"
 clone "$STATION_REPO" station
@@ -189,8 +193,8 @@ kw Plugins sheetEnabled true
 kw Plugins kwin4_effect_geometry_changeEnabled true
 kw Plugins kwin4_effect_shapecornersEnabled false          # square corners: Rounded Corners stays off
 plugin_exists() { ls /usr/lib*/qt6/plugins/"$1" >/dev/null 2>&1; }
-if plugin_exists kwin/effects/plugins/better_blur_dx.so; then kw Plugins blurEnabled false; kw Plugins better_blur_dxEnabled true
-else kw Plugins blurEnabled true; warn "Better Blur DX not installed (sudo ../kde-gruvbox-klassy/install-system.sh); using Plasma's blur."; fi
+if plugin_exists kwin/effects/plugins/forceblur.so; then kw Plugins blurEnabled false; kw Plugins forceblurEnabled true
+else kw Plugins blurEnabled true; warn "Better Blur not installed (sudo ../kde-gruvbox-klassy/install-system.sh); using Plasma's blur."; fi
 if plugin_exists org.kde.kdecoration3/org.kde.klassy.so; then
   kw org.kde.kdecoration2 library org.kde.klassy
   kw org.kde.kdecoration2 theme Klassy

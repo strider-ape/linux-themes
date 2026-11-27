@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gruvbox Klassy — system-wide parts. Run FIRST, with sudo:
+# Gruvbox Klassy — system-wide parts (branch plasma-6.3). Run FIRST, with sudo:
 #
 #   sudo ./install-system.sh
 #
@@ -13,11 +13,20 @@
 #
 # These are compiled KWin/KDecoration plugins: after a Plasma update, if blur or rounded
 # corners stop working, just run this script again to rebuild them.
+#
+# Branch plasma-6.3: for Plasma 6.3 (Debian 13 "trixie"). The same as main, but every
+# compiled plugin is pinned to its last release that builds against Plasma 6.3:
+#   Klassy        branch plasma6.3 (v6.5.3; master needs 6.4+)
+#   Better Blur   the original taj-ny/kwin-effects-forceblur v1.3.6
+#                 (Better Blur DX needs 6.5+, Better Blur 1.4+ needs 6.4+)
+#   Rounded Corners  master (its CI builds it on Debian 13)
 set -euo pipefail
 [[ $EUID -eq 0 ]] || { echo "Run with sudo: sudo $0" >&2; exit 1; }
 
 KLASSY_REPO="https://github.com/paulmcauley/klassy.git"
-BLUR_REPO="https://github.com/xarblu/kwin-effects-better-blur-dx.git"
+KLASSY_REF="plasma6.3"
+BLUR_REPO="https://github.com/taj-ny/kwin-effects-forceblur.git"
+BLUR_REF="v1.3.6"
 CORNERS_REPO="https://github.com/matinlotfali/KDE-Rounded-Corners.git"
 SILENT_REPO="https://github.com/uiriansan/SilentSDDM.git"
 
@@ -39,7 +48,7 @@ DEPS=(git cmake gcc-c++ gettext kf6-extra-cmake-modules
   # SilentSDDM runtime
   sddm-qt6 libQt6Svg6 qt6-virtualkeyboard qt6-virtualkeyboard-imports
   qt6-multimedia qt6-multimedia-imports qt6-imageformats)
-# The same, under Debian/Ubuntu names (checked against Debian Testing, Plasma 6.7)
+# The same, under Debian/Ubuntu names (checked against Debian 13 trixie, Plasma 6.3)
 DEPS_DEB=(git cmake g++ gettext extra-cmake-modules
   qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-declarative-private-dev qt6-svg-dev qt6-tools-dev
   libkf6config-dev libkf6configwidgets-dev libkf6coreaddons-dev libkf6colorscheme-dev libkf6style-dev
@@ -47,6 +56,8 @@ DEPS_DEB=(git cmake g++ gettext extra-cmake-modules
   libkf6crash-dev libkf6globalaccel-dev libkf6kio-dev libkf6service-dev libkf6notifications-dev
   libkf6itemmodels-dev libkf6iconthemes-dev libkdecorations3-dev libplasma-dev libplasmaactivities-dev
   plasma-workspace-dev kwin-dev libwayland-dev libepoxy-dev libdrm-dev
+  # Better Blur 1.3.6 also builds its X11 part
+  libx11-dev libxcb1-dev
   # SilentSDDM runtime
   sddm libqt6svg6 qml6-module-qtquick-virtualkeyboard qt6-virtualkeyboard-plugin
   qml6-module-qtmultimedia qt6-image-formats-plugins)
@@ -68,10 +79,10 @@ MEM_GB=$(awk '/^MemTotal/ {print int($2 / 1048576)}' /proc/meminfo)
 JOBS="${JOBS:-$(( MEM_GB / 2 < 1 ? 1 : (MEM_GB / 2 < $(nproc) ? MEM_GB / 2 : $(nproc)) ))}"
 say "Compiling with $JOBS job(s)"
 
-build_install() {  # $1 name, $2 repo, $3... extra cmake args
-  local name=$1 repo=$2; shift 2
-  say "Building $name"
-  git clone -q --depth 1 "$repo" "$TMP/$name"
+build_install() {  # $1 name, $2 repo, $3 branch or tag ("" = default branch), $4... extra cmake args
+  local name=$1 repo=$2 ref=$3; shift 3
+  say "Building $name${ref:+ ($ref)}"
+  git clone -q --depth 1 ${ref:+-b "$ref"} "$repo" "$TMP/$name"
   cmake -S "$TMP/$name" -B "$TMP/$name/build" -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF "$@" >"$TMP/$name.log" 2>&1 \
     || { tail -30 "$TMP/$name.log"; exit 1; }
@@ -85,10 +96,10 @@ build_install() {  # $1 name, $2 repo, $3... extra cmake args
 if [[ -e /usr/lib64/qt6/plugins/org.kde.kdecoration3/org.kde.klassy.so || -e /usr/lib/qt6/plugins/org.kde.kdecoration3/org.kde.klassy.so ]]; then
   say "Klassy already installed, skipping"
 else
-  build_install klassy "$KLASSY_REPO" -DBUILD_QT5=OFF
+  build_install klassy "$KLASSY_REPO" "$KLASSY_REF" -DBUILD_QT5=OFF
 fi
-build_install better-blur-dx "$BLUR_REPO"
-build_install rounded-corners "$CORNERS_REPO"
+build_install better-blur "$BLUR_REPO" "$BLUR_REF"
+build_install rounded-corners "$CORNERS_REPO" ""
 
 # ---------- 4. SilentSDDM ----------
 say "Installing SilentSDDM"

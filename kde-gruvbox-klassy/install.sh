@@ -124,8 +124,8 @@ kw() { kwriteconfig6 --file kwinrc --group "$1" --key "$2" "$3"; }
 kw Plugins sheetEnabled true
 kw Plugins kwin4_effect_geometry_changeEnabled true
 plugin_exists() { ls /usr/lib*/qt6/plugins/"$1" >/dev/null 2>&1; }
-if plugin_exists kwin/effects/plugins/better_blur_dx.so; then kw Plugins blurEnabled false; kw Plugins better_blur_dxEnabled true
-else warn "Better Blur DX not installed (sudo ./install-system.sh)"; fi
+if plugin_exists kwin/effects/plugins/forceblur.so; then kw Plugins blurEnabled false; kw Plugins forceblurEnabled true
+else warn "Better Blur not installed (sudo ./install-system.sh)"; fi
 if plugin_exists kwin/effects/plugins/kwin4_effect_shapecorners.so; then kw Plugins kwin4_effect_shapecornersEnabled true
 else warn "Rounded Corners not installed (sudo ./install-system.sh)"; fi
 if plugin_exists org.kde.kdecoration3/org.kde.klassy.so; then

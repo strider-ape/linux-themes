@@ -1,5 +1,11 @@
 # linux-themes
 
+> **Branch `plasma-6.3`** — for Plasma 6.3 (Debian 13 "trixie"). `main` needs Plasma 6.5+.
+> Here every compiled plugin and widget is pinned to its last release that works on 6.3:
+> Klassy branch `plasma6.3`, the original Better Blur v1.3.6 instead of Better Blur DX, and
+> FancyTasksPlus instead of FancyTasksNG (same Metro line in each app's colour, but no
+> "dim inactive" option). Rounded Corners and everything else are the same as on `main`.
+
 My Linux desktop setups, each with screenshots and a one-command installer.
 
 | Theme | Desktop | Preview |
