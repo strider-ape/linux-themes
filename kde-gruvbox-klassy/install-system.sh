@@ -3,7 +3,7 @@
 #
 #   sudo ./install-system.sh
 #
-#  1. Build dependencies (openSUSE: installed with zypper; other distros: install them yourself)
+#  1. Build dependencies (openSUSE: zypper; Debian/Ubuntu: apt; other distros: install them yourself)
 #  2. Klassy (window decoration + application style), skipped if already installed
 #  3. Better Blur DX + KDE Rounded Corners (KWin effects)
 #  4. SilentSDDM login theme + an SDDM drop-in config
@@ -39,13 +39,34 @@ DEPS=(git cmake gcc-c++ gettext kf6-extra-cmake-modules
   # SilentSDDM runtime
   sddm-qt6 libQt6Svg6 qt6-virtualkeyboard qt6-virtualkeyboard-imports
   qt6-multimedia qt6-multimedia-imports qt6-imageformats)
+# The same, under Debian/Ubuntu names (checked against Debian Testing, Plasma 6.7)
+DEPS_DEB=(git cmake g++ gettext extra-cmake-modules
+  qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-declarative-private-dev qt6-svg-dev qt6-tools-dev
+  libkf6config-dev libkf6configwidgets-dev libkf6coreaddons-dev libkf6colorscheme-dev libkf6style-dev
+  libkf6guiaddons-dev libkf6i18n-dev libkf6kcmutils-dev libkirigami-dev libkf6windowsystem-dev
+  libkf6crash-dev libkf6globalaccel-dev libkf6kio-dev libkf6service-dev libkf6notifications-dev
+  libkf6itemmodels-dev libkf6iconthemes-dev libkdecorations3-dev libplasma-dev libplasmaactivities-dev
+  plasma-workspace-dev kwin-dev libwayland-dev libepoxy-dev libdrm-dev
+  # SilentSDDM runtime
+  sddm libqt6svg6 qml6-module-qtquick-virtualkeyboard qt6-virtualkeyboard-plugin
+  qml6-module-qtmultimedia qt6-image-formats-plugins)
 if command -v zypper >/dev/null; then
   say "Installing build dependencies with zypper"
   zypper --non-interactive in --no-recommends "${DEPS[@]}"
+elif command -v apt-get >/dev/null; then
+  say "Installing build dependencies with apt"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${DEPS_DEB[@]}"
 else
-  echo "Not openSUSE: make sure the equivalents of these are installed:"; printf '  %s\n' "${DEPS[@]}"
-  read -rp "Continue? [y/N] " a; [[ "$a" == [yY]* ]] || exit 1
+  echo "No zypper or apt: make sure the equivalents of these (openSUSE names) are installed:"; printf '  %s\n' "${DEPS[@]}"
+  if [[ -t 0 ]]; then read -rp "Continue? [y/N] " a; [[ "$a" == [yY]* ]] || exit 1
+  else echo "No terminal to ask: continuing; a build stops with the name of anything missing."; fi
 fi
+
+# Parallel compile jobs: about one per 2 GB of RAM (all cores can freeze a low-RAM PC).
+# Override with JOBS=n.
+MEM_GB=$(awk '/^MemTotal/ {print int($2 / 1048576)}' /proc/meminfo)
+JOBS="${JOBS:-$(( MEM_GB / 2 < 1 ? 1 : (MEM_GB / 2 < $(nproc) ? MEM_GB / 2 : $(nproc)) ))}"
+say "Compiling with $JOBS job(s)"
 
 build_install() {  # $1 name, $2 repo, $3... extra cmake args
   local name=$1 repo=$2; shift 2
@@ -54,7 +75,7 @@ build_install() {  # $1 name, $2 repo, $3... extra cmake args
   cmake -S "$TMP/$name" -B "$TMP/$name/build" -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF "$@" >"$TMP/$name.log" 2>&1 \
     || { tail -30 "$TMP/$name.log"; exit 1; }
-  cmake --build "$TMP/$name/build" -j"$(nproc)" >>"$TMP/$name.log" 2>&1 \
+  cmake --build "$TMP/$name/build" -j"$JOBS" >>"$TMP/$name.log" 2>&1 \
     || { tail -30 "$TMP/$name.log"; exit 1; }
   cmake --install "$TMP/$name/build" >/dev/null
   cat "$TMP/$name/build/install_manifest.txt" >> "$MANIFEST"; echo >> "$MANIFEST"

@@ -48,7 +48,7 @@ A light top bar and a floating dock over a dark Gruvbox desktop. Window decorati
 
 ## Install
 
-Tested on openSUSE Tumbleweed-Slowroll with Plasma 6.8.3 on Wayland. The build dependencies are installed automatically only on openSUSE; on other distros, the script lists them for you to install.
+Tested on openSUSE Tumbleweed-Slowroll with Plasma 6.8.3 on Wayland. The build dependencies are installed automatically on openSUSE (zypper) and Debian/Ubuntu (apt; the Debian names were checked against Debian Testing with Plasma 6.7); on other distros, the script lists them for you to install. It compiles with about one job per 2 GB of RAM, so a low-memory PC doesn't freeze; set `JOBS=n` to change that.
 
 ```bash
 git clone https://github.com/strider-ape/linux-themes.git
