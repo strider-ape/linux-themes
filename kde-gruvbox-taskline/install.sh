@@ -96,7 +96,7 @@ else
     rm -rf "$DATA/icons/$t"; cp -a "$TMP/papirus/$t" "$DATA/icons/"
   done
 fi
-CHANGEICONS="$(ls /usr/libexec/plasma-changeicons /usr/lib/plasma-changeicons /usr/lib*/libexec/plasma-changeicons 2>/dev/null | head -1 || true)"
+CHANGEICONS="$(ls /usr/libexec/plasma-changeicons /usr/lib/plasma-changeicons /usr/lib*/libexec/plasma-changeicons /usr/lib/*/libexec/plasma-changeicons 2>/dev/null | head -1 || true)"
 if [[ -n "$CHANGEICONS" ]]; then "$CHANGEICONS" Papirus-Light
 else kwriteconfig6 --file kdeglobals --group Icons --key Theme Papirus-Light; fi
 
@@ -188,7 +188,8 @@ kw() { kwriteconfig6 --file kwinrc --group "$1" --key "$2" "$3"; }
 kw Plugins sheetEnabled true
 kw Plugins kwin4_effect_geometry_changeEnabled true
 kw Plugins kwin4_effect_shapecornersEnabled false          # square corners: Rounded Corners stays off
-plugin_exists() { ls /usr/lib*/qt6/plugins/"$1" >/dev/null 2>&1; }
+plugin_exists() {   # /usr/lib/<arch>/ on Debian
+  compgen -G "/usr/lib*/qt6/plugins/$1" >/dev/null || compgen -G "/usr/lib/*/qt6/plugins/$1" >/dev/null; }
 if plugin_exists kwin/effects/plugins/better_blur_dx.so; then kw Plugins blurEnabled false; kw Plugins better_blur_dxEnabled true
 else kw Plugins blurEnabled true; warn "Better Blur DX not installed (sudo ../kde-gruvbox-klassy/install-system.sh); using Plasma's blur."; fi
 if plugin_exists org.kde.kdecoration3/org.kde.klassy.so; then
