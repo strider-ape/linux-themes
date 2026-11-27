@@ -56,8 +56,9 @@ DEPS_DEB=(git cmake g++ gettext extra-cmake-modules
   libkf6crash-dev libkf6globalaccel-dev libkf6kio-dev libkf6service-dev libkf6notifications-dev
   libkf6itemmodels-dev libkf6iconthemes-dev libkdecorations3-dev libplasma-dev libplasmaactivities-dev
   plasma-workspace-dev kwin-dev libwayland-dev libepoxy-dev libdrm-dev
-  # Better Blur 1.3.6 also builds its X11 part
-  libx11-dev libxcb1-dev
+  # Better Blur 1.3.6 also builds its X11 part (KWin's xcbutils.h needs these headers)
+  libx11-dev libxcb1-dev libxcb-composite0-dev libxcb-damage0-dev libxcb-randr0-dev
+  libxcb-shm0-dev libxcb-sync-dev libxcb-xfixes0-dev
   # SilentSDDM runtime
   sddm libqt6svg6 qml6-module-qtquick-virtualkeyboard qt6-virtualkeyboard-plugin
   qml6-module-qtmultimedia qt6-image-formats-plugins)
